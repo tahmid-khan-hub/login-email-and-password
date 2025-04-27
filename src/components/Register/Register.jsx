@@ -1,29 +1,59 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../../firebase.init";
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa6";
 
 const Register = () => {
-    const [errMeassage, setErrMessage] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [errMeassage, setErrMessage] = useState("");
+  const [show, setShow] = useState(false);
 
-    const handleRegister = e =>{
-        e.preventDefault();
-        const email = e.target.email.value;
-        const password = e.target.password.value;
+  const handleRegister = (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const terms = e.target.terms.checked;
 
-        console.log(email, password);
+    console.log(email, password);
 
-        setErrMessage('');
+    setSuccess(false);
+    setErrMessage("");
 
-        createUserWithEmailAndPassword(auth, email, password)
-        .then(res =>{
-            console.log(res);
-        })
-        .catch(err =>{
-            console.log(err);
-            setErrMessage(err.message)
-        })
-
+    if(terms === false){
+        setErrMessage('please accept our terms and condition');
+        return;
     }
+
+    // const passwordRegEx = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
+    const passwordDigit = /(?=.*\d)/;
+    const passwordLowerCase = /(?=.*[a-z])/;
+    const passwordUpperCase = /(?=.*[A-Z])/;
+
+    if (password.length < 8) {
+      setErrMessage("password must have a length of 8 characters or longer");
+      return;
+    } else if (passwordDigit.test(password) === false) {
+      setErrMessage("password must have one digit");
+      return;
+    } else if (passwordLowerCase.test(password) === false) {
+      setErrMessage("password must have one (a-z) lowercase letter");
+      return;
+    } else if (passwordUpperCase.test(password) === false) {
+      setErrMessage("password must have one (A-Z) uppercase letter");
+      return;
+    }
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((res) => {
+        console.log(res);
+        setSuccess(true);
+      })
+      .catch((err) => {
+        console.log(err);
+        setErrMessage(err.message);
+      });
+  };
 
   return (
     <div className="max-w-sm p-4 border mx-auto rounded-xl mt-12">
@@ -49,7 +79,12 @@ const Register = () => {
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                 </g>
               </svg>
-              <input type="email" name="email" placeholder="mail@site.com" required />
+              <input
+                type="email"
+                name="email"
+                placeholder="mail@site.com"
+                required
+              />
             </label>
             <div className="validator-hint hidden">
               Enter valid email address
@@ -58,47 +93,33 @@ const Register = () => {
         </div>
 
         {/* password */}
-        <label className="input validator">
-          <svg
-            className="h-[1em] opacity-50"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-          >
-            <g
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              strokeWidth="2.5"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
-              <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
-            </g>
-          </svg>
+        <div className="relative">
           <input
-            type="password"
+            type={show ? "text" : "password"}
             name="password"
-            required
+            className="input"
             placeholder="Password"
-            minLength="8"
-            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-            title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
           />
-        </label>
-        <p className="validator-hint hidden">
-          Must be more than 8 characters, including
-          <br />
-          At least one number <br />
-          At least one lowercase letter <br />
-          At least one uppercase letter
-        </p> <br />
+          <button
+            onClick={() => setShow(!show)}
+            className="btn btn-xs absolute top-1.5 right-8"
+          >
+            {show ? <FaRegEye></FaRegEye> : <FaRegEyeSlash></FaRegEyeSlash>}
+          </button>
+        </div>
+
+        <label className="label mt-5">
+          <input type="checkbox" name="terms" defaultChecked className="checkbox" />
+          accept terms and conditions
+        </label> <br />
 
         {/* submit */}
         <input className="btn btn-primary mt-5" type="submit" value="submit" />
       </form>
-      {
-        errMeassage && <p className="text-red-400 mt-5">{errMeassage}</p>
-      }
+      {errMeassage && <p className="text-red-400 mt-5">{errMeassage}</p>}
+      {success && (
+        <p className="text-green-500 mt-5">User has created Successfully</p>
+      )}
     </div>
   );
 };
