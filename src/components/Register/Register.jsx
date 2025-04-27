@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../../firebase.init";
 import { FaRegEye } from "react-icons/fa";
@@ -48,7 +48,16 @@ const Register = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((res) => {
         console.log(res);
-        setSuccess(true);
+        // setSuccess(true);
+
+
+        // email verify
+        sendEmailVerification(auth.currentUser)
+        .then(()=>{
+            setSuccess(true);
+            alert('we sent you verify email. Please check it');
+        })
+
       })
       .catch((err) => {
         console.log(err);
@@ -110,7 +119,7 @@ const Register = () => {
         </div>
 
         <label className="label mt-5">
-          <input type="checkbox" name="terms" defaultChecked className="checkbox" />
+          <input type="checkbox" name="terms" className="checkbox" />
           accept terms and conditions
         </label> <br />
 
