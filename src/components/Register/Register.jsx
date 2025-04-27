@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { auth } from "../../firebase.init";
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa6";
+import { Link } from "react-router";
 
 const Register = () => {
   const [success, setSuccess] = useState(false);
@@ -116,6 +117,9 @@ const Register = () => {
         {/* submit */}
         <input className="btn btn-primary mt-5" type="submit" value="submit" />
       </form>
+
+        <p className="mt-5">Already have an account? Please <Link className="text-blue-500 underline" to="/login">Login</Link> </p>
+
       {errMeassage && <p className="text-red-400 mt-5">{errMeassage}</p>}
       {success && (
         <p className="text-green-500 mt-5">User has created Successfully</p>
