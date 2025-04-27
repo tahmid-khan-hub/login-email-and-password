@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../../firebase.init";
 import { FaRegEye } from "react-icons/fa";
@@ -11,7 +11,12 @@ const Register = () => {
   const [show, setShow] = useState(false);
 
   const handleRegister = (e) => {
+
     e.preventDefault();
+
+
+    const name = e.target.name.value;
+    const photo = e.target.photo.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
     const terms = e.target.terms.checked;
@@ -58,6 +63,20 @@ const Register = () => {
             alert('we sent you verify email. Please check it');
         })
 
+        // update profile
+        const profile = {
+          displayName: name,
+          photoURL: photo
+        }
+
+        updateProfile(auth.currentUser, profile)
+        .then(()=>{
+          console.log('user profile uploaded');
+        })
+        .catch((err)=>{
+          console.log(err);
+        })
+
       })
       .catch((err) => {
         console.log(err);
@@ -69,26 +88,19 @@ const Register = () => {
     <div className="max-w-sm p-4 border mx-auto rounded-xl mt-12">
       <h2 className="mb-5 text-2xl font-semibold">Please Register</h2>
       <form className="" onSubmit={handleRegister}>
+
+
+        {/* name */}
+        <input type="text" name="name" className="input" placeholder="your name" />
+
+        {/* photo url */}
+        <input type="text" name="photo" className="input my-5" placeholder="your photo URL" />
+
         {/* email */}
         <div className="mb-5">
           <div>
             <label className="input validator join-item">
-              <svg
-                className="h-[1em] opacity-50"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <g
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  strokeWidth="2.5"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                </g>
-              </svg>
+              
               <input
                 type="email"
                 name="email"
