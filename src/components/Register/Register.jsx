@@ -1,8 +1,9 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import React from "react";
+import React, { useState } from "react";
 import { auth } from "../../firebase.init";
 
 const Register = () => {
+    const [errMeassage, setErrMessage] = useState('');
 
     const handleRegister = e =>{
         e.preventDefault();
@@ -11,12 +12,15 @@ const Register = () => {
 
         console.log(email, password);
 
+        setErrMessage('');
+
         createUserWithEmailAndPassword(auth, email, password)
         .then(res =>{
             console.log(res);
         })
         .catch(err =>{
             console.log(err);
+            setErrMessage(err.message)
         })
 
     }
@@ -92,6 +96,9 @@ const Register = () => {
         {/* submit */}
         <input className="btn btn-primary mt-5" type="submit" value="submit" />
       </form>
+      {
+        errMeassage && <p className="text-red-400 mt-5">{errMeassage}</p>
+      }
     </div>
   );
 };
